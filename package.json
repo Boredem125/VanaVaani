@@ -1,0 +1,11 @@
+{
+  "name": "vanavaani",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Forest sound sets the daily tourist quota and entry fee; the surge pays local forest guardians.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/indices.test.mjs",
+    "start": "python -m http.server 5173"
+  }
+}

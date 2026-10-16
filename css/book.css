@@ -1,0 +1,321 @@
+/* Book (simulated WhatsApp chat + UPI sheet), Gate check, and postcard modal.
+   Uses tokens from styles.css only. The QR/pass area uses literal white so
+   phones can scan it in dark mode. */
+
+/* ---- Book layout ---- */
+.vv-book {
+  display: grid;
+  gap: var(--gap);
+  align-items: start;
+  min-width: 0;
+}
+.vv-phone-col { display: grid; gap: 8px; min-width: 0; }
+.vv-under { display: flex; justify-content: flex-end; }
+.vv-restart {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  color: var(--accent);
+  font: 600 0.9rem var(--font-body);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.vv-book-note { display: none; }
+.vv-book-note ul { margin: 10px 0 0; padding-left: 18px; color: var(--ink); font-size: 0.95rem; }
+
+@media (min-width: 900px) {
+  .vv-book { grid-template-columns: minmax(0, 420px) minmax(0, 1fr); }
+  .vv-book-note { display: block; position: sticky; top: 120px; max-width: 46ch; }
+}
+
+/* ---- Phone frame ---- */
+.vv-phone {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: min(720px, calc(100vh - 180px));
+  min-height: 480px;
+  background: var(--chat-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+@media (min-width: 900px) {
+  .vv-phone {
+    border: 10px solid var(--ink);
+    border-radius: 34px;
+    height: 720px;
+  }
+}
+
+.vv-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--canopy);
+  color: var(--canopy-ink);
+  min-width: 0;
+}
+.vv-avatar {
+  flex: none;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: grid; place-items: center;
+}
+.vv-avatar svg { width: 24px; height: 24px; fill: none; stroke: var(--accent); stroke-width: 2.8; stroke-linecap: round; }
+.vv-chat-title { display: grid; min-width: 0; line-height: 1.2; }
+.vv-chat-title strong { font: 700 1rem var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vv-chat-sub { font-size: 0.75rem; opacity: 0.75; }
+.vv-chat-sim { margin-left: auto; flex: none; color: var(--canopy-ink); border-color: var(--canopy-ink); opacity: 0.85; }
+
+.vv-chat-log {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.vv-day, .vv-system {
+  align-self: center;
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  max-width: 92%;
+}
+.vv-system { background: var(--warn-soft); color: var(--ink); }
+
+.vv-turn { display: grid; gap: 4px; justify-items: start; }
+
+.vv-msg { display: flex; max-width: 88%; min-width: 0; }
+.vv-msg-in { align-self: flex-start; }
+.vv-msg-out { align-self: flex-end; }
+.vv-msg-body {
+  position: relative;
+  padding: 7px 10px 6px;
+  border-radius: 10px;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.08);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  color: var(--ink);
+}
+.vv-msg-in .vv-msg-body { background: var(--chat-in); border-top-left-radius: 2px; }
+.vv-msg-out .vv-msg-body { background: var(--chat-out); border-top-right-radius: 2px; }
+.vv-msg-body p + p, .vv-msg-body p + ul, .vv-msg-body ul + p, .vv-msg-body .vv-pass + p { margin-top: 6px; }
+.vv-msg-body ul { margin: 4px 0 0; padding-left: 18px; }
+.vv-msg-meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.vv-ticks svg { width: 16px; height: 11px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.vv-quote-health { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.vv-quote-total { font-weight: 700; }
+.vv-split-head { font-weight: 600; }
+.vv-money { font-weight: 600; }
+
+/* Typing indicator */
+.vv-typing .vv-msg-body { display: flex; gap: 4px; padding: 10px 12px; }
+.vv-typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: vv-blink 1s infinite; }
+.vv-typing span:nth-child(2) { animation-delay: 0.15s; }
+.vv-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes vv-blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+/* WhatsApp-style interactive reply buttons */
+.vv-quick { display: grid; gap: 4px; width: min(88%, 320px); }
+.vv-quick-btn {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--chat-in);
+  color: var(--accent);
+  font: 600 0.92rem var(--font-body);
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.08);
+  cursor: pointer;
+  text-align: center;
+}
+.vv-quick-btn:hover:not(:disabled) { background: var(--accent-soft); }
+.vv-quick-btn.is-primary { background: var(--accent); color: var(--accent-ink); }
+.vv-quick-btn:disabled { cursor: default; opacity: 0.55; }
+.vv-quick-btn.is-chosen { opacity: 1; outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* Compose bar */
+.vv-chat-compose {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: var(--chat-bg);
+  border-top: 1px solid var(--line);
+}
+.vv-chat-input {
+  flex: 1;
+  min-width: 0;
+  border-radius: 999px !important;
+  padding: 8px 14px !important;
+  background: var(--chat-in) !important;
+}
+.vv-chat-send {
+  flex: none;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.vv-chat-send svg { width: 20px; height: 20px; fill: currentColor; }
+
+/* ---- Pass inside the chat ---- */
+.vv-msg-pass { max-width: min(92%, 300px); }
+.vv-pass {
+  background: #ffffff;
+  color: #0b1a12;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+}
+.vv-pass-title { font: 700 1rem var(--font-display); }
+.vv-pass-code { font-size: 1.05rem; font-weight: 500; letter-spacing: 0.06em; }
+.vv-pass-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  margin: 0;
+  font-size: 0.85rem;
+  width: 100%;
+}
+.vv-pass-facts dt { color: #4a5d52; }
+.vv-pass-facts dd { margin: 0; font-weight: 600; }
+.vv-qr {
+  background: #ffffff;
+  padding: 12px; /* quiet zone */
+  line-height: 0;
+  max-width: 100%;
+}
+.vv-qr img, .vv-qr canvas { display: block; width: 100%; max-width: 200px; height: auto; image-rendering: pixelated; }
+
+/* ---- Simulated UPI bottom sheet ---- */
+.vv-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  background: rgb(0 0 0 / 0.45);
+}
+.vv-sheet-panel {
+  width: 100%;
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: 16px 16px 0 0;
+  padding: 10px 16px 16px;
+  display: grid;
+  gap: 10px;
+  max-height: 92%;
+  overflow-y: auto;
+  animation: vv-rise 0.22s ease-out;
+}
+@keyframes vv-rise { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.vv-sheet-grab { justify-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--line); }
+.vv-sheet-head { justify-content: space-between; }
+.vv-sheet-head h2 { font-size: 1.1rem; }
+.vv-sheet-amount { font: 800 2.2rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.vv-sheet-facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 0.9rem; }
+.vv-sheet-facts dt { color: var(--muted); }
+.vv-sheet-facts dd { margin: 0; overflow-wrap: anywhere; }
+.vv-sheet-actions { justify-content: flex-end; }
+.vv-sheet-actions .btn { flex: 1 1 120px; }
+.vv-sheet-status:empty { display: none; }
+.vv-sheet-ok { display: flex; align-items: center; gap: 8px; color: var(--ok); font-weight: 700; }
+.vv-sheet-ok svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; background: var(--ok-soft); border-radius: 50%; padding: 3px; }
+.vv-spinner {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: vv-spin 0.7s linear infinite;
+}
+@keyframes vv-spin { to { transform: rotate(360deg); } }
+
+/* ---- Gate ---- */
+.vv-gate-reader { width: 100%; max-width: 420px; border-radius: var(--radius-sm); overflow: hidden; }
+.vv-gate-reader:not(.is-active) { display: none; }
+.vv-gate-reader video { width: 100% !important; height: auto !important; display: block; }
+.vv-gate-input { width: 100%; font-family: var(--font-mono) !important; font-size: 0.85rem !important; resize: vertical; overflow-wrap: anywhere; }
+
+.vv-gate-result { border-width: 2px; outline: none; }
+.vv-gate-result-head { display: flex; align-items: center; gap: 12px; }
+.vv-gate-result h2 { font-size: clamp(1.4rem, 5vw, 2rem); margin: 0; }
+.vv-gate-icon { flex: none; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: currentColor; }
+.vv-gate-icon svg { width: 30px; height: 30px; fill: none; stroke: var(--surface); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.vv-gate-detail { margin-top: 8px; }
+.vv-gate-facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: 0.95rem; }
+.vv-gate-facts dt { color: var(--muted); }
+.vv-gate-facts dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+.vv-gate-ok { border-color: var(--ok); background: var(--ok-soft); }
+.vv-gate-ok h2, .vv-gate-ok .vv-gate-icon { color: var(--ok); }
+.vv-gate-warn { border-color: var(--warn); background: var(--warn-soft); }
+.vv-gate-warn h2, .vv-gate-warn .vv-gate-icon { color: var(--warn); }
+.vv-gate-bad { border-color: var(--bad); background: var(--bad-soft); }
+.vv-gate-bad h2, .vv-gate-bad .vv-gate-icon { color: var(--bad); }
+
+.vv-gate-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.vv-gate-log-item {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--line);
+  background: var(--surface-2);
+}
+.vv-gate-log-item.vv-gate-ok { border-left-color: var(--ok); background: var(--ok-soft); }
+.vv-gate-log-item.vv-gate-warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.vv-gate-log-item.vv-gate-bad { border-left-color: var(--bad); background: var(--bad-soft); }
+.vv-gate-log-label { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .vv-gate-log-item { grid-template-columns: auto 1fr; }
+  .vv-gate-log-label { grid-column: 1 / -1; }
+}
+
+/* ---- Postcard modal ---- */
+.vv-modal {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+}
+.vv-modal[open] { display: grid; gap: 12px; }
+.vv-modal::backdrop { background: rgb(0 0 0 / 0.6); }
+.vv-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.vv-postcard-frame { display: grid; place-items: center; background: var(--surface-2); border-radius: var(--radius-sm); padding: 8px; }
+.vv-postcard-canvas { width: 100%; height: auto; max-height: 64vh; aspect-ratio: 1080 / 1350; object-fit: contain; border-radius: 4px; }
+.vv-modal-actions { justify-content: flex-end; }

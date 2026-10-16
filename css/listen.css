@@ -1,0 +1,220 @@
+/* Listen tab and Judge mode panel. Tokens from styles.css only. */
+
+/* ---- Listen: recorder card ---- */
+.lp-recorder { display: grid; gap: 12px; align-content: start; }
+.lp-recorder > h2 { margin-bottom: 0; }
+.lp-fields { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.lp-fields select, .lp-recorder select { width: 100%; }
+.lp-source-extra { display: grid; gap: 6px; }
+.lp-source-extra input[type="file"] { max-width: 100%; font: 400 0.9rem var(--font-body); }
+
+/* Segmented control built from radio inputs */
+.lp-seg-wrap { display: grid; gap: 4px; min-width: 0; }
+.lp-seg-label { font-weight: 600; font-size: 0.9rem; }
+.lp-seg {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+}
+.lp-seg label { position: relative; display: block; min-width: 0; }
+.lp-seg input {
+  position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer;
+}
+.lp-seg span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 38px;
+  padding: 4px 6px;
+  border-radius: calc(var(--radius-sm) - 2px);
+  font: 600 0.88rem/1.15 var(--font-body);
+  color: var(--muted);
+}
+.lp-seg input:checked + span {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.lp-seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 1px; }
+.lp-seg input:disabled + span { opacity: 0.55; }
+
+/* GPS */
+.lp-gps {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+}
+.lp-gps-line { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.lp-gps-line .small { flex: 1 1 160px; min-width: 0; }
+.lp-override { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; cursor: pointer; }
+.lp-override input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+
+/* Record button */
+.lp-record {
+  width: 100%;
+  min-height: 56px;
+  font: 700 1.1rem var(--font-display);
+  border-radius: 999px;
+}
+.lp-record.is-recording {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: var(--surface);
+}
+.lp-record.is-recording::before {
+  content: "";
+  width: 12px; height: 12px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: pulse 1.2s infinite;
+}
+.lp-progress { display: flex; align-items: center; gap: 10px; }
+.lp-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.lp-progress-bar span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.1s linear; }
+.lp-msg { min-height: 1.3em; color: var(--muted); }
+.lp-msg-error { color: var(--bad); font-weight: 600; }
+
+.lp-spec-wrap { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--line); background: var(--surface-2); }
+.lp-spec { display: block; width: 100%; height: 180px; }
+
+/* ---- Listen: result card ---- */
+.lp-result { display: grid; gap: 12px; align-content: start; }
+.lp-result > h2, .lp-result-head h2 { margin-bottom: 0; }
+.lp-result-head { display: grid; gap: 2px; }
+.lp-howto { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.lp-health {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.lp-health .kpi-value { font-size: 2.4rem; }
+.lp-of { font-size: 1rem; color: var(--muted); font-weight: 600; margin-left: 2px; }
+
+.lp-meters { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.lp-meter { display: grid; gap: 4px; min-width: 0; }
+.lp-meter-head { display: flex; justify-content: space-between; gap: 8px; }
+.lp-meter-label { font-weight: 700; font-family: var(--font-display); }
+.lp-meter-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.lp-meter-fill { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+
+.lp-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lp-checks li { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: start; font-size: 0.92rem; }
+.lp-check-mark {
+  display: inline-block;
+  min-width: 44px;
+  text-align: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font: 600 0.72rem/1.6 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.lp-check-mark.lp-check-ok { background: var(--ok-soft); color: var(--ok); }
+.lp-check-mark.lp-check-warn { background: var(--warn-soft); color: var(--warn); }
+.lp-check-mark.lp-check-bad { background: var(--bad-soft); color: var(--bad); }
+.lp-gps .lp-check-ok { color: var(--ok); font-weight: 600; }
+.lp-gps .lp-check-warn { color: var(--warn); font-weight: 600; }
+
+.lp-pay { padding: 10px 12px; border-radius: var(--radius-sm); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.lp-pay-ok { background: var(--ok-soft); color: var(--ink); }
+.lp-pay-no { background: var(--bad-soft); color: var(--ink); }
+
+/* ---- Listen: today ---- */
+.lp-today { display: grid; gap: 12px; }
+.lp-today-head { display: grid; gap: 12px; }
+.lp-today-head h2 { margin: 0; }
+.lp-today-kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.lp-table td { white-space: nowrap; }
+.lp-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.lp-tag-ok { background: var(--ok-soft); color: var(--ok); }
+.lp-tag-warn { background: var(--warn-soft); color: var(--warn); }
+.lp-tag-bad { background: var(--bad-soft); color: var(--bad); }
+
+/* ---- Judge mode panel contents ---- */
+.judge-fab.is-live { border-color: var(--warn); }
+.jd { display: grid; gap: 10px; min-width: 0; }
+.jd-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.jd-head h2 { margin: 0; font-size: 1.15rem; }
+.jd-scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.jd-scenes .btn { padding: 4px 6px; line-height: 1.15; min-width: 0; white-space: normal; }
+.jd-scene[aria-pressed="true"], [data-j="mic"][aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.jd-actions { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.jd-mute { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; cursor: pointer; }
+.jd-mute input { margin: 0; accent-color: var(--accent); }
+.jd-status { min-height: 1.3em; color: var(--muted); }
+.jd-status.jd-error { color: var(--bad); font-weight: 600; }
+.jd-spec {
+  display: block;
+  width: 100%;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.jd-live { display: grid; gap: 10px; }
+.jd-score {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.jd-big { font: 800 3rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.jd-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.jd-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.jd-delta { font-size: 0.8rem; }
+.jd-delta-up { color: var(--warn); }
+.jd-delta-down { color: var(--accent); }
+.jd-rain {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--warn-soft);
+  color: var(--ink);
+  font-weight: 600;
+}
+.jd-ix { overflow-wrap: anywhere; }
+.jd-reset { border-top: 1px solid var(--line); padding-top: 10px; }
+.jd-confirm { display: grid; gap: 8px; padding: 10px; border-radius: var(--radius-sm); background: var(--bad-soft); }
+
+@media (max-width: 420px) {
+  .lp-spec { height: 150px; }
+  .jd-big { font-size: 2.5rem; }
+  .lp-health .kpi-value { font-size: 2rem; }
+}

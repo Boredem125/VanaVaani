@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>VanaVaani</title>
+  <meta name="description" content="The forest's own sound sets the daily tourist quota and entry fee, and the surge pays local forest guardians.">
+  <meta name="theme-color" content="#0f3a2c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f3a2c'/%3E%3Cpath d='M6 20c3-8 5-8 7 0s4 8 6 0 4-8 7 0' stroke='%2367d4b8' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/listen.css">
+  <link rel="stylesheet" href="css/book.css">
+  <link rel="stylesheet" href="css/insights.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#dashboard" aria-label="VanaVaani home">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 18c3-9 5-9 7 0s4 9 6 0 4-9 6 0 4 9 7 0"/></svg>
+        <span class="brand-name">VanaVaani</span>
+        <span class="brand-sub">the forest's voice</span>
+      </a>
+      <label class="site-picker">
+        <span class="visually-hidden">Site</span>
+        <select id="site-select" aria-label="Select eco-site"></select>
+      </label>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#dashboard" data-tab="dashboard">Forest health</a>
+      <a href="#listen" data-tab="listen">Listen</a>
+      <a href="#book" data-tab="book">Book</a>
+      <a href="#gate" data-tab="gate">Gate</a>
+      <a href="#guardians" data-tab="guardians">Guardians</a>
+      <a href="#backtest" data-tab="backtest">Back-test</a>
+      <a href="#pitch" data-tab="pitch">How it works</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="view" id="view-dashboard" data-view="dashboard"></section>
+    <section class="view" id="view-listen" data-view="listen" hidden></section>
+    <section class="view" id="view-book" data-view="book" hidden></section>
+    <section class="view" id="view-gate" data-view="gate" hidden></section>
+    <section class="view" id="view-guardians" data-view="guardians" hidden></section>
+    <section class="view" id="view-backtest" data-view="backtest" hidden></section>
+    <section class="view" id="view-pitch" data-view="pitch" hidden></section>
+  </main>
+
+  <button class="judge-fab" id="judge-fab" type="button" aria-expanded="false" aria-controls="judge-panel">Judge mode</button>
+  <aside class="judge-panel" id="judge-panel" hidden aria-label="Judge mode"></aside>
+
+  <footer class="foot">
+    <p>Prototype for the Emerge for Good Innovation Challenge, Responsible Tourism track. Site history, payments and messaging are simulated; acoustic analysis is real and runs in your browser.</p>
+  </footer>
+</body>
+</html>
