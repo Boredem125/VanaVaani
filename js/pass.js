@@ -1,13 +1,28 @@
-// Signed entry passes: "VV1.<base64url(JSON payload)>.<base64url(16-byte HMAC-SHA256 tag)>".
+// Signed entry passes, compact so the QR stays coarse enough for cheap cameras:
+//   "VV2.<id>~<siteId>~<yyyymmdd>~<people>~<total>~<iat base36>.<base64url(16-byte HMAC-SHA256 tag)>"
+// About 65 characters, a version-4 QR. Older "VV1.<base64url(JSON)>.<tag>" passes still verify.
 // The gate verifies offline: no network needed at the trail head.
+
+import { SITES } from './store.js';
 //
 // DEMO ONLY: the key is hard-coded so the Book and Gate tabs can share it in one
 // static page. In production the pass is signed server-side (key never ships to
 // the browser) and guides verify with an Ed25519 public key instead.
 
 const DEMO_KEY = 'vanavaani-demo-key-2026-not-a-secret';
-const PREFIX = 'VV1';
+const PREFIX = 'VV2';
+const LEGACY_PREFIX = 'VV1';
 const TAG_BYTES = 16;
+
+// Site names are not carried in the QR; look them up (main sites and alternatives).
+function siteNameFor(id) {
+  for (const s of SITES) {
+    if (s.id === id) return s.name;
+    const alt = (s.alternatives || []).find((a) => a.id === id);
+    if (alt) return alt.name;
+  }
+  return id;
+}
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
@@ -130,43 +145,59 @@ async function hmac(msgBytes) {
   return hmacSha256Js(enc.encode(DEMO_KEY), msgBytes);
 }
 
-async function tagFor(body) {
-  const full = await hmac(enc.encode(PREFIX + '.' + body));
+async function tagFor(prefix, body) {
+  const full = await hmac(enc.encode(prefix + '.' + body));
   return b64urlFromBytes(full.slice(0, TAG_BYTES));
 }
 
-// payload: { id, siteId, siteName, date, people, total, iat }
+// payload: { id, siteId, date, people, total, iat }
 export async function signPass(payload) {
-  const clean = {
-    id: payload.id,
-    siteId: payload.siteId,
-    siteName: payload.siteName,
-    date: payload.date,
-    people: payload.people,
-    total: payload.total,
-    iat: payload.iat ?? Math.floor(Date.now() / 1000),
+  const iat = payload.iat ?? Math.floor(Date.now() / 1000);
+  const body = [
+    payload.id,
+    payload.siteId,
+    String(payload.date).replace(/-/g, ''),
+    Number(payload.people) || 1,
+    Math.round(Number(payload.total) || 0),
+    iat.toString(36),
+  ].join('~');
+  return `${PREFIX}.${body}.${await tagFor(PREFIX, body)}`;
+}
+
+function parseCompact(body) {
+  const f = body.split('~');
+  if (f.length !== 6 || !/^VV-[A-Z0-9]{3,8}$/.test(f[0]) || !/^[a-z0-9-]+$/.test(f[1]) || !/^\d{8}$/.test(f[2])) return null;
+  return {
+    id: f[0],
+    siteId: f[1],
+    siteName: siteNameFor(f[1]),
+    date: `${f[2].slice(0, 4)}-${f[2].slice(4, 6)}-${f[2].slice(6, 8)}`,
+    people: Number(f[3]),
+    total: Number(f[4]),
+    iat: parseInt(f[5], 36),
   };
-  const body = b64urlFromBytes(enc.encode(JSON.stringify(clean)));
-  return `${PREFIX}.${body}.${await tagFor(body)}`;
 }
 
 // Returns { ok, payload, reason } where reason is null, 'format' or 'signature'.
 export async function verifyPass(token) {
   const t = String(token || '').replace(/\s+/g, '');
   const parts = t.split('.');
-  if (parts.length !== 3 || parts[0] !== PREFIX || !parts[1] || !parts[2]) {
+  const prefix = parts[0];
+  if (parts.length !== 3 || (prefix !== PREFIX && prefix !== LEGACY_PREFIX) || !parts[1] || !parts[2]) {
     return { ok: false, payload: null, reason: 'format' };
   }
   let payload = null;
   try {
-    payload = JSON.parse(dec.decode(bytesFromB64url(parts[1])));
+    payload = prefix === PREFIX
+      ? parseCompact(parts[1])
+      : JSON.parse(dec.decode(bytesFromB64url(parts[1])));
   } catch {
     return { ok: false, payload: null, reason: 'format' };
   }
   if (!payload || typeof payload !== 'object' || !payload.id || !payload.date) {
     return { ok: false, payload: null, reason: 'format' };
   }
-  const expected = await tagFor(parts[1]);
+  const expected = await tagFor(prefix, parts[1]);
   // Constant-time compare of the two tags.
   let diff = expected.length ^ parts[2].length;
   for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ (parts[2].charCodeAt(i) || 0);
@@ -176,7 +207,7 @@ export async function verifyPass(token) {
 
 // Draws the token as a QR code into `el`. Always dark ink on white with a quiet
 // zone (padding comes from .vv-qr in book.css) so phones scan it in dark mode too.
-export function renderQR(el, token, size = 220) {
+export function renderQR(el, token, size = 256) {
   el.innerHTML = '';
   el.classList.add('vv-qr');
   if (typeof QRCode === 'undefined') {

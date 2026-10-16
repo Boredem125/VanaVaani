@@ -531,7 +531,7 @@ function sendPass(b, q) {
     extraClass: 'vv-msg-pass',
     delay: 600,
     after: (group) => {
-      renderQR(qr, b.token, 200);
+      renderQR(qr, b.token, 256);
       lastPassButtons = group.querySelector('.vv-quick');
     },
   });

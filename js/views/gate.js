@@ -108,7 +108,7 @@ async function check(raw) {
   }
   const res = await verifyPass(token);
   if (!res.ok) {
-    if (res.reason === 'signature' || token.startsWith('VV1.')) {
+    if (res.reason === 'signature' || /^VV[12]\./.test(token)) {
       showResult('bad', 'Fake or altered pass', 'The signature does not match. Someone made or edited this pass. Do not allow entry.', res.payload);
     } else {
       showResult('bad', 'Not a VanaVaani pass', 'This code is not in the VanaVaani pass format.', null);
@@ -169,11 +169,25 @@ async function startScan() {
   els.reader.classList.add('is-active');
   setScanStatus('Starting camera. Point it at the visitor\'s QR.');
   try {
-    if (!scanner) scanner = new Html5Qrcode(READER_ID, { verbose: false });
+    if (!scanner) {
+      const qrOnly = typeof Html5QrcodeSupportedFormats !== 'undefined'
+        ? { formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE] } : {};
+      scanner = new Html5Qrcode(READER_ID, {
+        verbose: false,
+        ...qrOnly,
+        // Native BarcodeDetector (Android, macOS, ChromeOS) is faster and more tolerant than the JS decoder.
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+      });
+    }
     let handled = false;
     await scanner.start(
       { facingMode: 'environment' },
-      { fps: 10, qrbox: (w, h) => { const s = Math.floor(Math.min(w, h) * 0.75); return { width: s, height: s }; } },
+      {
+        fps: 15,
+        qrbox: (w, h) => { const s = Math.floor(Math.min(w, h) * 0.85); return { width: s, height: s }; },
+        // Ask for HD: laptop webcams default to 640x480, too coarse for a phone-screen QR.
+        videoConstraints: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+      },
       async (text) => {
         if (handled) return;
         handled = true;
@@ -222,7 +236,7 @@ export function mount(r) {
     reader, scanStatus);
 
   // Paste card.
-  const ta = el('textarea', { id: 'vv-gate-input', rows: '4', class: 'vv-gate-input', spellcheck: 'false', autocomplete: 'off', placeholder: 'VV-AB12C or VV1.eyJ...' });
+  const ta = el('textarea', { id: 'vv-gate-input', rows: '4', class: 'vv-gate-input', spellcheck: 'false', autocomplete: 'off', placeholder: 'VV-AB12C or VV2.VV-AB12C~...' });
   const verifyBtn = el('button', { type: 'button', class: 'btn btn-primary', text: 'Verify' });
   const latestBtn = el('button', { type: 'button', class: 'btn', text: 'Use my latest booking' });
   const pasteCard = el('section', { class: 'card stack', 'aria-labelledby': 'vv-gate-paste-h' },
