@@ -79,6 +79,16 @@ async function start() {
   window.addEventListener('hashchange', () => open(location.hash.slice(1)));
   open(location.hash.slice(1) || 'dashboard');
   initJudge();
+  initTourSafe();
+}
+
+async function initTourSafe() {
+  try {
+    const { initTour } = await import('./tour.js?v=6');
+    initTour();
+  } catch (err) {
+    console.error('Tour failed to load', err);
+  }
 }
 
 start();

@@ -50,6 +50,16 @@ The tests check that forest sound scores Thriving, crowd noise scores Critical, 
 
 The repository root is a static site. Import it in Vercel with no framework preset and no build command. `vercel.json` grants microphone, camera and geolocation access to the page itself.
 
+## Guided tour for judges
+
+Share **https://vanavaani.vercel.app/?tour** and the guided tour starts by itself. It's a 12-step walkthrough:
+
+- A spotlight moves from feature to feature, and an animated cursor taps the controls.
+- In Judge mode, the tour can play the forest and crowd soundscapes for you.
+- Tick **Auto-play** to run the whole tour hands-free.
+
+First-time visitors also get a "Take the tour" prompt. The **Guided tour** button in the top bar restarts it at any time. Use arrow keys to step through and Esc to exit.
+
 ## Finale demo script (3 minutes)
 
 1. **Forest health tab (30 s).** Nongriat Root Bridges is selected. Point out the health dial, tomorrow's quota and fee, the fee split, and the 30-day chart showing the dip from the festival weekend.

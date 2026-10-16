@@ -15,11 +15,12 @@
   <link rel="stylesheet" href="css/listen.css">
   <link rel="stylesheet" href="css/book.css">
   <link rel="stylesheet" href="css/insights.css">
+  <link rel="stylesheet" href="css/tour.css?v=3">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=6"></script>
 </head>
 <body>
   <header class="topbar">
@@ -29,6 +30,7 @@
         <span class="brand-name">VanaVaani</span>
         <span class="brand-sub">the forest's voice</span>
       </a>
+      <button type="button" class="tour-btn" id="tour-btn" aria-label="Start the guided tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span>Guided tour</span></button>
       <label class="site-picker">
         <span class="visually-hidden">Site</span>
         <select id="site-select" aria-label="Select eco-site"></select>
