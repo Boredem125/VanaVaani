@@ -20,12 +20,12 @@ function hashStr(s) {
 // Booking may be for a listed site or for one of its nearby alternatives.
 function resolveSite(booking) {
   const direct = siteById(booking.siteId);
-  if (direct) return { site: direct, parent: direct, km: null };
+  if (direct) return { site: direct, parent: direct, alt: null, km: null };
   const parent = siteById(booking.parentSiteId)
     || SITES.find((s) => (s.alternatives || []).some((a) => a.id === booking.siteId))
     || SITES[0];
   const alt = (parent.alternatives || []).find((a) => a.id === booking.siteId);
-  return { site: null, parent, km: alt ? alt.km : null };
+  return { site: null, parent, alt, km: alt ? alt.km : null };
 }
 
 function fmtDate(str) {
@@ -159,10 +159,10 @@ export async function drawPostcard(canvas, booking) {
   canvas.height = H;
   const ctx = canvas.getContext('2d');
   const rng = mulberry32(hashStr(String(booking.id || 'VV')));
-  const { site, parent, km } = resolveSite(booking);
+  const { site, parent, alt, km } = resolveSite(booking);
   const siteName = booking.siteName || (site && site.name) || 'Forest site';
   const place = site ? site.place : (km != null ? `${km} km from ${parent.name}, ${parent.place}` : parent.place);
-  const village = parent.village;
+  const village = (alt && alt.village) || parent.village;
   const health = booking.healthAtBooking;
   const statusLabel = health != null ? statusFor(health).label : null;
 

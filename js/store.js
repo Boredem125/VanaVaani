@@ -39,8 +39,8 @@ export const SITES = [
     ],
     species: ['Black-crested Bulbul', 'Streaked Spiderhunter', 'Blue-throated Barbet', 'Greater Racket-tailed Drongo', 'Grey-headed Canary-flycatcher', 'Asian Barred Owlet', 'Chestnut-headed Bee-eater', 'Rufous-necked Laughingthrush', 'Common Hill Myna', 'Black-naped Monarch'],
     alternatives: [
-      { id: 'riwai', name: 'Riwai Root Bridge', km: 38, baseFee: 30, maxDaily: 250, seedScore: 88 },
-      { id: 'padu', name: 'Padu Root Bridges', km: 52, baseFee: 30, maxDaily: 150, seedScore: 91 },
+      { id: 'riwai', name: 'Riwai Root Bridge', village: 'Riwai Dorbar Shnong', km: 38, baseFee: 30, maxDaily: 250, seedScore: 88 },
+      { id: 'padu', name: 'Padu Root Bridges', village: 'Padu Dorbar Shnong', km: 52, baseFee: 30, maxDaily: 150, seedScore: 91 },
     ],
   },
   {
@@ -48,7 +48,7 @@ export const SITES = [
     name: 'Khecheopalri Lake',
     place: 'West Sikkim',
     lat: 27.35, lon: 88.195,
-    maxDaily: 300, baseFee: 40, seedScore: 83, controlQuality: CONTROL_QUALITY,
+    maxDaily: 300, baseFee: 40, seedScore: 93, controlQuality: CONTROL_QUALITY,
     village: 'Khecheopalri Eco-Development Committee',
     posts: [
       { id: 'kp-jetty', name: 'Prayer-wheel jetty', lat: 27.3502, lon: 88.1948, control: false },
@@ -65,8 +65,8 @@ export const SITES = [
     ],
     species: ['Rufous Sibia', 'Green-tailed Sunbird', 'Grey-winged Blackbird', 'Black-throated Tit', 'Great Barbet', 'Verditer Flycatcher', 'Himalayan Bulbul', 'Large-billed Crow', 'Whistler\'s Warbler', 'Golden-throated Barbet'],
     alternatives: [
-      { id: 'rinchenpong', name: 'Rinchenpong Village Walk', km: 24, baseFee: 30, maxDaily: 200, seedScore: 86 },
-      { id: 'hee-bermiok', name: 'Hee Bermiok Forest Trail', km: 31, baseFee: 30, maxDaily: 180, seedScore: 89 },
+      { id: 'rinchenpong', name: 'Rinchenpong Village Walk', village: 'Rinchenpong village committee', km: 24, baseFee: 30, maxDaily: 200, seedScore: 86 },
+      { id: 'hee-bermiok', name: 'Hee Bermiok Forest Trail', village: 'Hee Bermiok village committee', km: 31, baseFee: 30, maxDaily: 180, seedScore: 89 },
     ],
   },
   {
@@ -92,8 +92,8 @@ export const SITES = [
     ],
     species: ['Spot-billed Pelican', 'Purple Swamphen', 'Bronze-winged Jacana', 'White-throated Kingfisher', 'Asian Openbill', 'Indian Pond Heron', 'Little Cormorant', 'Pheasant-tailed Jacana', 'Ashy Prinia', 'Clamorous Reed Warbler'],
     alternatives: [
-      { id: 'bahour', name: 'Bahour Lake', km: 22, baseFee: 20, maxDaily: 200, seedScore: 84 },
-      { id: 'chunnambar', name: 'Chunnambar Backwaters', km: 14, baseFee: 30, maxDaily: 400, seedScore: 76 },
+      { id: 'bahour', name: 'Bahour Lake', village: 'Bahour Commune Panchayat', km: 22, baseFee: 20, maxDaily: 200, seedScore: 84 },
+      { id: 'chunnambar', name: 'Chunnambar Backwaters', village: 'Ariyankuppam Commune Panchayat', km: 14, baseFee: 30, maxDaily: 400, seedScore: 76 },
     ],
   },
 ];
@@ -155,13 +155,13 @@ function freshState() {
   const today = todayStr();
   const history = {};
   for (const s of SITES) history[s.id] = seedHistory(s, today);
-  return { version: 1, seededOn: today, history, recordings: [], bookings: [], usedPasses: [] };
+  return { version: 2, seededOn: today, history, recordings: [], bookings: [], usedPasses: [] };
 }
 
 export function getState() {
   if (!state) {
     const saved = lsGet();
-    state = saved && saved.version === 1 && saved.seededOn === todayStr() ? saved : freshState();
+    state = saved && saved.version === 2 && saved.seededOn === todayStr() ? saved : freshState();
     lsSet(state);
   }
   return state;

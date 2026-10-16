@@ -323,12 +323,19 @@ function renderResult() {
       <span class="muted small">${esc(postName)}${isControl ? ' (control)' : ''}, ${esc(new Date(rec.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}, ${esc(sourceLabel(rec.source))}, ${Math.round(rec.durationSec)} s</span>
     </div>
     <div class="lp-health">
+      ${rec.rain ? `
+      <div class="kpi">
+        <span class="kpi-label">Health estimate</span>
+        <span class="kpi-value">Not scored</span>
+        <span class="kpi-note">Rain masks birds and insects, so this clip is left out of the forest score. Record again when it is dry.</span>
+      </div>
+      <span class="pill pill-stressed">Rain</span>` : `
       <div class="kpi">
         <span class="kpi-label">Health estimate</span>
         <span class="kpi-value">${health}<span class="lp-of">/100</span></span>
         <span class="kpi-note">Acoustic quality ${fmt(rec.quality, 2)} against the control reference ${fmt(r.controlQuality, 2)}</span>
       </div>
-      <span class="pill pill-${st.key}">${esc(st.label)}</span>
+      <span class="pill pill-${st.key}">${esc(st.label)}</span>`}
     </div>
     <div class="lp-meters">
       ${meter('NDSI', ix.ndsi, -1, 1, fmt(ix.ndsi, 2), 'Nature sound (2-11 kHz) against people and engines (1-2 kHz). +1 is all nature, -1 is all noise.')}

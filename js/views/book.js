@@ -369,7 +369,7 @@ function quoteAlt(alt) {
     health: alt.status.score,
     statusKey: status.key,
     statusLabelEn: status.label,
-    village: parent.village,
+    village: alt.village || parent.village,
   };
   st.quote = q;
   const quota = alt.status.quota ?? alt.maxDaily;
